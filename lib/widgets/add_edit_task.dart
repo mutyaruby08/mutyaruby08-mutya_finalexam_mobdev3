@@ -1,5 +1,7 @@
+import 'package:bloc_finals_exam/bloc/bloc_exports.dart';
 import 'package:flutter/material.dart';
 
+import '../bloc/bloc/tasks_event.dart';
 import '../models/task.dart';
 
 class AddEditTask extends StatefulWidget {
@@ -90,6 +92,9 @@ class _AddEditTaskState extends State<AddEditTask> {
                 ElevatedButton(
                   onPressed: _title.isNotEmpty && _description.isNotEmpty
                       ? () {
+                          var task =
+                              Task(title: _title, description: _description);
+                          context.read<TasksBloc>().add(AddTask(task: task));
                           Navigator.pop(context);
                         }
                       : null,
