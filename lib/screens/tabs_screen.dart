@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/bloc/tasks_bloc.dart';
+import '../bloc/tasks_bloc/tasks_bloc.dart';
 // import '../bloc/bloc/tasks_state.dart';
 // import '../models/task.dart';
 import '../widgets/add_edit_task.dart';
