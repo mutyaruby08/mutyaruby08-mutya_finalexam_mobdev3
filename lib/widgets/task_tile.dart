@@ -12,12 +12,13 @@ class TaskTile extends StatelessWidget {
 
   final Task task;
 
-void _removeOrDeleteTask(BuildContext context, Task task){
-  task.isDeleted!
-  ? context.read<TasksBloc>().add(DeleteTask(task: task))
-  : context.read<TasksBloc>().add(RemoveTask(task: task),
-  );
-}
+  void _removeOrDeleteTask(BuildContext context, Task task) {
+    task.isDeleted!
+        ? context.read<TasksBloc>().add(DeleteTask(task: task))
+        : context.read<TasksBloc>().add(
+              RemoveTask(task: task),
+            );
+  }
 
   _editTask(BuildContext context) {
     showModalBottomSheet(
@@ -79,17 +80,18 @@ void _removeOrDeleteTask(BuildContext context, Task task){
                     ? (value) {
                         context.read<TasksBloc>().add(UpdateTask(task: task));
                       }
-                      : null),
-                
+                    : null),
             PopupMenu(
               task: task,
               editCallback: () {
                 Navigator.pop(context);
                 _editTask(context);
               },
-              likeOrDislikeCallback: () {},
+              likeOrDislikeCallback: () => context
+                  .read<TasksBloc>()
+                  .add(MarkFaveOrUnfaveTask(task: task)),
               cancelOrDeleteCallback: () => _removeOrDeleteTask(context, task),
-              restoreTaskCallback: () => {},
+              restoreTaskCallback: () => context.read<TasksBloc>().add(RestoreTask(task: task)),
             ),
           ],
         ),
