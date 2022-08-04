@@ -12,10 +12,10 @@ class RecycleBinScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Task> removedTasks = [
-      Task(title: 'Finals exam', description: 'Study for Finals Exam'),
-      Task(title: 'Buy groceries', description: 'Don\'t forget the cheese'),
-    ];
+    // final List<Task> removedTasks = [
+    //   Task(title: 'Finals exam', description: 'Study for Finals Exam'),
+    //   Task(title: 'Buy groceries', description: 'Don\'t forget the cheese'),
+    // ];
 
     return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
@@ -28,12 +28,12 @@ class RecycleBinScreen extends StatelessWidget {
                   itemBuilder: (context) => [
                     PopupMenuItem(
                       child: TextButton.icon(
-                        //diri
                         onPressed: null,
                         icon: const Icon(Icons.delete_forever),
                         label: const Text('Delete all tasks'),
                       ),
-                      onTap: () {},
+                      onTap: () =>
+                          context.read<TasksBloc>().add(DeleteAllTasks()),
                     ),
                   ],
                 ),
@@ -48,7 +48,7 @@ class RecycleBinScreen extends StatelessWidget {
                   Center(
                     child: Chip(
                       //state?
-                      label: Text('$removedTasks.length} Tasks'),
+                      label: Text('${state.removedTasks.length} Tasks'),
                     ),
                   ),
                   const SizedBox(height: 10),

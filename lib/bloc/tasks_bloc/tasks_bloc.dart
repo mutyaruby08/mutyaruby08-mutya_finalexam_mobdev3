@@ -13,6 +13,7 @@ class TasksBloc extends HydratedBloc<TasksEvent, TasksState> {
     on<RemoveTask>(_onRemoveTask);
     on<MarkFaveOrUnfaveTask>(_onMarkFaveOrUnfaveTask);
     on<RestoreTask>(_onRestoreTask);
+    on<DeleteAllTasks>(_onDeleteAllTask);
   }
 
   void _onAddTask(AddTask event, Emitter<TasksState> emit) {
@@ -30,22 +31,38 @@ class TasksBloc extends HydratedBloc<TasksEvent, TasksState> {
     final task = event.task;
     List<Task> pendingTasks = state.pendingTasks;
     List<Task> completedTasks = state.completedTasks;
-    task.isDone == false
-        ? {
-            pendingTasks = List.from(pendingTasks)..remove(task),
-            completedTasks = List.from(completedTasks)
-              ..insert(0, task.copyWith(isDone: true)),
-          }
-        : {
-            completedTasks = List.from(completedTasks)..remove(task),
-            pendingTasks = List.from(pendingTasks)
-              ..insert(0, task.copyWith(isDone: false))
-          };
-
+    List<Task> favoriteTasks = state.pendingTasks;
+    if (task.isDone == false) {
+      if (task.isFavorite == false) {
+        pendingTasks = List.from(pendingTasks)..remove(task);
+        completedTasks.insert(0, task.copyWith(isDone: true));
+      } else {
+        var taskIndex = favoriteTasks.indexOf(task);
+        pendingTasks = List.from(pendingTasks)..remove(task);
+        completedTasks.insert(0, task.copyWith(isDone: true));
+        favoriteTasks = List.from(favoriteTasks)
+          ..remove(task)
+          ..insert(taskIndex, task.copyWith(isDone: true));
+      }
+    } else {
+      if (task.isFavorite == false) {
+        completedTasks = List.from(completedTasks)..remove(task);
+        pendingTasks = List.from(pendingTasks)
+          ..insert(0, task.copyWith(isDone: false));
+      } else {
+        var taskIndex = favoriteTasks.indexOf(task);
+        completedTasks = List.from(completedTasks)..remove(task);
+        pendingTasks = List.from(pendingTasks)
+          ..insert(0, task.copyWith(isDone: false));
+        favoriteTasks = List.from(favoriteTasks)
+          ..remove(task)
+          ..insert(taskIndex, task.copyWith(isDone: false));
+      }
+    }
     emit(TasksState(
       pendingTasks: pendingTasks,
       completedTasks: completedTasks,
-      favoriteTasks: state.favoriteTasks,
+      favoriteTasks: favoriteTasks,
       removedTasks: state.removedTasks,
     ));
   }
@@ -127,6 +144,16 @@ class TasksBloc extends HydratedBloc<TasksEvent, TasksState> {
             )),
       completedTasks: state.completedTasks,
       favoriteTasks: state.favoriteTasks,
+    ));
+  }
+
+  void _onDeleteAllTask(DeleteAllTasks event, Emitter<TasksState> emit) {
+    final state = this.state;
+    emit(TasksState(
+      pendingTasks: state.pendingTasks,
+      completedTasks: state.completedTasks,
+      favoriteTasks: state.favoriteTasks,
+      removedTasks: List.from(state.removedTasks)..clear(),
     ));
   }
 
